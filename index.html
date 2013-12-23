@@ -7,21 +7,108 @@
   <body>
     <script>
 
-      $(document).ready(function(){
-        var $body = $('body');
-        $body.html('');
+    	/*
+    	**************************************
+    	TO DO
+    	**************************************
+	- Show the user new tweets somehow
+	  - Automatically as created?
+  	  - Click on a button?
+	- Display the timestamps of when the tweets were created
+	- Design interface 
+	- Allow users to click a username to see that user's timeline
 
-        var index = streams.home.length - 1;
-        while(index >= 0){
-          var tweet = streams.home[index];
-          var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
-          index -= 1;
-        }
+	
+	users = [username1, username2, ..., usernamen]
+	streams = {users: {username1: username1's tweets,
+			   username2: username2's tweets,
+			   ...				
+			   usernamen: usernamen's tweets},
+		   home:  [tweet1, tweet2, tweet3]}	
+    	*/
 
-      });
 
+    	/*
+    	**************************************
+    	QUESTIONS
+    	**************************************
+	
+	- It's okay to display the timestamps in native form?  
+	--- It looks like converting the timestamp is extra credit but ...
+	- How much interface design is necessary? 
+	- Clicking a username
+	- Why is my function declaration only working within the ready?
+	--- I didn't have this problem with chatbuilder	
+	- Clicking on username - does it need to be in the same format as now?
+
+    	*/
+
+
+    	/*
+    	**************************************
+    	FUNCTION DECLARATIONS
+    	**************************************
+    	*/
+
+	// this isn't working as a function declaration 
+	// only from within the ready block
+    	var fetchTweets = function() {
+    	  var index = streams.home.length - 1;
+	  $body.append(index);
+    	  while(index >= 0){
+    	    var tweet = streams.home[index];
+    	    $tweet.text('@' + tweet.user + ': ' + tweet.message);
+    	    $tweet.appendTo($body);
+    	    index -= 1;
+   	   }
+	};
+
+    	/*
+    	**************************************
+    	BODY OF SCRIPT
+    	**************************************
+    	*/
+    
+
+    	$(document).ready(function(){
+
+      	  var $body = $('body');
+    	  $body.html('');
+    	  $body.append('<h2>TWITTLER!</h2>');
+    	  $body.append('<button>Get New Tweets</button>');
+    	  $body.append('<p></p>');
+      
+	  var currentIndex = 0;
+	  var $alltweets = $('<div></div>');
+	  $alltweets.appendTo($body);
+
+	  var fetchTweets = function() {
+      	    var index = streams.home.length - 1;
+      	    while(index > currentIndex){
+              var tweet = streams.home[index];
+              var $tweet = $('<div></div>');
+	      var $username = $('<button class="link">' + tweet.user + '</button>');
+              $tweet.text('@' + tweet.user + ': ' + tweet.message);
+              $tweet.prependTo($alltweets);
+              index -= 1;
+	    }
+	    //$alltweets.prepend('Tweets created: ' + (NewDate).getTime());
+	    var time = (new Date()).getTime();
+	    $alltweets.prepend('Tweets created: ' + time);
+	    currentIndex = streams.home.length - 1;;
+	  }
+
+	  fetchTweets();
+	      	
+	  $('button').on('click', function(event) {
+	     $alltweets.prepend('<p>-----</p>');	     
+	     fetchTweets();
+      	  });
+
+
+    	});
+    
     </script>
+
   </body>
 </html>
