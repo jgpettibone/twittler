@@ -33,13 +33,11 @@
     	QUESTIONS
     	**************************************
 	
-	- It's okay to display the timestamps in native form?  
-	--- It looks like converting the timestamp is extra credit but ...
 	- How much interface design is necessary? 
-	- Clicking a username
 	- Why is my function declaration only working within the ready?
 	--- I didn't have this problem with chatbuilder	
-	- Clicking on username - does it need to be in the same format as now?
+	- Why is the click-on-username not working after getting new tweets using the button?
+	- Clicking on username - does the text need to be in the same format?
 
     	*/
 
@@ -50,6 +48,7 @@
     	**************************************
     	*/
 
+/*
 	// this isn't working as a function declaration 
 	// only from within the ready block
     	var fetchTweets = function() {
@@ -57,12 +56,13 @@
 	  $body.append(index);
     	  while(index >= 0){
     	    var tweet = streams.home[index];
+	    //$user = '<button class='user'> + tweet.user + '</button>';
     	    $tweet.text('@' + tweet.user + ': ' + tweet.message);
     	    $tweet.appendTo($body);
     	    index -= 1;
    	   }
 	};
-
+*/
     	/*
     	**************************************
     	BODY OF SCRIPT
@@ -73,11 +73,15 @@
     	$(document).ready(function(){
 
       	  var $body = $('body');
-    	  $body.html('');
-    	  $body.append('<h2>TWITTLER!</h2>');
-    	  $body.append('<button>Get New Tweets</button>');
-    	  $body.append('<p></p>');
-      
+	/*
+    	  //$body.html('');
+    	  //$body.append('<h2>TWITTLER!</h2>');
+	  //$body.append("<div id='fetching'>");
+    	  //$body.append('<button>Get New Tweets</button>');
+ 	  //$body.append('</div>');
+    	  //$body.append('<p></p>');
+      	*/
+
 	  var currentIndex = 0;
 	  var $alltweets = $('<div></div>');
 	  $alltweets.appendTo($body);
@@ -86,29 +90,46 @@
       	    var index = streams.home.length - 1;
       	    while(index > currentIndex){
               var tweet = streams.home[index];
-              var $tweet = $('<div></div>');
-	      var $username = $('<button class="link">' + tweet.user + '</button>');
-              $tweet.text('@' + tweet.user + ': ' + tweet.message);
+              var $tweet = $("<div class='tweet'></div>");
+	      var $username = $("<button class='link'>" + tweet.user + "</button>");
+	      $username.css({'background': 'none', 'border':'none'});
+              //$tweet.text('@' + tweet.user + ': ' + tweet.message);
+              $tweet.append('@'); 
+              $tweet.append($username);
+              $tweet.append(': ' + tweet.message + ' ' + tweet.created_at);
               $tweet.prependTo($alltweets);
               index -= 1;
 	    }
-	    //$alltweets.prepend('Tweets created: ' + (NewDate).getTime());
-	    var time = (new Date()).getTime();
-	    $alltweets.prepend('Tweets created: ' + time);
 	    currentIndex = streams.home.length - 1;;
 	  }
 
 	  fetchTweets();
 	      	
-	  $('button').on('click', function(event) {
+	  //$('button').on('click', function(event) {
+	  $('#fetching').on('click', 'button', function(event) {
 	     $alltweets.prepend('<p>-----</p>');	     
 	     fetchTweets();
+      	  });
+
+	  $('.tweet').on('click', 'button', function(event) {
+	     $thisuser = $(this).text();
+	     $alltweets.prepend('<p>-----</p>');
+	     for (var key in streams.users[$thisuser]) {
+	        $alltweets.prepend('<div>' + streams.users[$thisuser][key]["message"] + ' ' + streams.users[$thisuser][key]["created_at"] + '</div>');
+	     }
+	     $alltweets.prepend("<div>" + $thisuser + "'s messages:<div>");	    
       	  });
 
 
     	});
     
     </script>
+
+	<h2>TWITTLER!</h2>
+	<div id='fetching'>
+		<button>Get New Tweets</button>
+	</div>
+	<p></p>
 
   </body>
 </html>
