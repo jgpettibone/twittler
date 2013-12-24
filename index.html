@@ -34,9 +34,7 @@
     	**************************************
 	
 	- How much interface design is necessary? 
-	- Why is the click-on-username not working after getting new tweets using 
-	  the button?
-	- Clicking on username - does the text need to be in the same format?
+	- Why with the username click?
 
     	*/
 
@@ -47,9 +45,12 @@
     	**************************************
     	*/
 
-	var fetchTweets = function(currentIndex) {
+	var fetchTweets = function() {
 	  var index = streams.home.length - 1;
-	  while(index >= currentIndex) {
+	  $currInd = $('.all-tweets').data('index');
+	  //alert("old ind in = " + $currInd);
+	  //while(index > currentIndex) {
+	  while(index > $currInd) {
 	    var tweet = streams.home[index];
 	    var $tweet = $("<div class='tweet'></div>");
 	    var $username = $("<button class='link'>" + tweet.user + "</button>");
@@ -60,12 +61,49 @@
             $tweet.prependTo($('.all-tweets'));
             index -= 1;
 	  }
-	  return currentIndex = streams.home.length - 1;
+	  $('.all-tweets').data('index', streams.home.length - 1);
+
+	      //this needs to come right after the fetchTweets or it doesn't work with new tweets
+	      //I don't know why this is ...
+	      //but then it multiplies so that each time fetch is called the first gives one
+	      //then second group gives one and first gives two, etc
+	      //so I tried turning it off and on again - which works
+	      //I don't know why this is ...
+   	      $('.tweet').off('click');
+	      $('.tweet').on('click', 'button', function() {
+	        debugger;
+	        $thisuser = $(this).text();
+	        $('.all-tweets').prepend("<p class='separator'>-----</p>");
+	        for (var key in streams.users[$thisuser]) {
+	          $('.all-tweets').prepend("<div class='timeline'>" + streams.users[$thisuser][key]["message"] + 
+		' ' + streams.users[$thisuser][key]["created_at"] + '</div>');
+	        }
+	        $('.all-tweets').prepend("<div class='timeline'>" + $thisuser + "'s messages:<div>");	    
+      	      });
+
         }
+
+
+	var confirmation = {
+	  init: function() {
+	    $('#fetching').on('click', function(){ 
+	      $('.all-tweets').prepend("<p class='separator'>-----</p>");
+	      fetchTweets();
+	    });	
+	    $('#clearing').on('click', function() {
+	      //$('.all-tweets').data('index', 0);
+	      $('.tweet').remove();
+	      $('.separator').remove();
+	      $('.timeline').remove();
+	    });
+	  }
+	};
+	
 
 	var testFun = function() {
 	  alert("Hello");
 	}
+
 
 
     	/*
@@ -77,30 +115,11 @@
 
     	$('document').ready(function(){
 
-      	  var $body = $('body');
+	  //creates the event handler
+	  confirmation.init();
 
-	  var currentIndex = 0;
-	  var $alltweets = $("<div class='all-tweets'></div>");
-	  $alltweets.appendTo($body);
-
-	  currentIndex = fetchTweets(currentIndex);
-	      	
-	  $('#fetching').on('click', 'button', function() {
-	     $('.all-tweets').prepend('<p>-----</p>');	     
-	     currentIndex = fetchTweets(currentIndex);
-          });
-
-
-	  $('.tweet').on('click', 'button', function() {
-	     $thisuser = $(this).text();
-	     $('.all-tweets').prepend('<p>-----</p>');
-	     for (var key in streams.users[$thisuser]) {
-	        $('.all-tweets').prepend('<div>' + streams.users[$thisuser][key]["message"] + 
-		' ' + streams.users[$thisuser][key]["created_at"] + '</div>');
-	     }
-	     $('.all-tweets').prepend("<div>" + $thisuser + "'s messages:<div>");	    
-      	  });
-
+	  //initial tweet grab
+	  fetchTweets();
 
     	});
     
@@ -110,7 +129,13 @@
 	<div id='fetching'>
 	  <button>Get New Tweets</button>
 	</div>
+	<div id='clearing'>
+	  <button>Clear All Tweets</button>
+	</div>
 	<p></p>
+	<div class='all-tweets' data-index=0>
+	  <div class='tweet'></div>
+	</div>
 	
   </body>
 </html>
