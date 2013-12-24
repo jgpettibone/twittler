@@ -34,9 +34,8 @@
     	**************************************
 	
 	- How much interface design is necessary? 
-	- Why is my function declaration only working within the ready?
-	--- I didn't have this problem with chatbuilder	
-	- Why is the click-on-username not working after getting new tweets using the button?
+	- Why is the click-on-username not working after getting new tweets using 
+	  the button?
 	- Clicking on username - does the text need to be in the same format?
 
     	*/
@@ -48,21 +47,27 @@
     	**************************************
     	*/
 
-/*
-	// this isn't working as a function declaration 
-	// only from within the ready block
-    	var fetchTweets = function() {
-    	  var index = streams.home.length - 1;
-	  $body.append(index);
-    	  while(index >= 0){
-    	    var tweet = streams.home[index];
-	    //$user = '<button class='user'> + tweet.user + '</button>';
-    	    $tweet.text('@' + tweet.user + ': ' + tweet.message);
-    	    $tweet.appendTo($body);
-    	    index -= 1;
-   	   }
-	};
-*/
+	var fetchTweets = function(currentIndex) {
+	  var index = streams.home.length - 1;
+	  while(index >= currentIndex) {
+	    var tweet = streams.home[index];
+	    var $tweet = $("<div class='tweet'></div>");
+	    var $username = $("<button class='link'>" + tweet.user + "</button>");
+	    $username.css({'background': 'none', 'border':'none'});
+            $tweet.append('@'); 
+            $tweet.append($username);
+            $tweet.append(': ' + tweet.message + ' ' + tweet.created_at);
+            $tweet.prependTo($('.all-tweets'));
+            index -= 1;
+	  }
+	  return currentIndex = streams.home.length - 1;
+        }
+
+	var testFun = function() {
+	  alert("Hello");
+	}
+
+
     	/*
     	**************************************
     	BODY OF SCRIPT
@@ -70,54 +75,30 @@
     	*/
     
 
-    	$(document).ready(function(){
+    	$('document').ready(function(){
 
       	  var $body = $('body');
-	/*
-    	  //$body.html('');
-    	  //$body.append('<h2>TWITTLER!</h2>');
-	  //$body.append("<div id='fetching'>");
-    	  //$body.append('<button>Get New Tweets</button>');
- 	  //$body.append('</div>');
-    	  //$body.append('<p></p>');
-      	*/
 
 	  var currentIndex = 0;
-	  var $alltweets = $('<div></div>');
+	  var $alltweets = $("<div class='all-tweets'></div>");
 	  $alltweets.appendTo($body);
 
-	  var fetchTweets = function() {
-      	    var index = streams.home.length - 1;
-      	    while(index > currentIndex){
-              var tweet = streams.home[index];
-              var $tweet = $("<div class='tweet'></div>");
-	      var $username = $("<button class='link'>" + tweet.user + "</button>");
-	      $username.css({'background': 'none', 'border':'none'});
-              //$tweet.text('@' + tweet.user + ': ' + tweet.message);
-              $tweet.append('@'); 
-              $tweet.append($username);
-              $tweet.append(': ' + tweet.message + ' ' + tweet.created_at);
-              $tweet.prependTo($alltweets);
-              index -= 1;
-	    }
-	    currentIndex = streams.home.length - 1;;
-	  }
-
-	  fetchTweets();
+	  currentIndex = fetchTweets(currentIndex);
 	      	
-	  //$('button').on('click', function(event) {
-	  $('#fetching').on('click', 'button', function(event) {
-	     $alltweets.prepend('<p>-----</p>');	     
-	     fetchTweets();
-      	  });
+	  $('#fetching').on('click', 'button', function() {
+	     $('.all-tweets').prepend('<p>-----</p>');	     
+	     currentIndex = fetchTweets(currentIndex);
+          });
 
-	  $('.tweet').on('click', 'button', function(event) {
+
+	  $('.tweet').on('click', 'button', function() {
 	     $thisuser = $(this).text();
-	     $alltweets.prepend('<p>-----</p>');
+	     $('.all-tweets').prepend('<p>-----</p>');
 	     for (var key in streams.users[$thisuser]) {
-	        $alltweets.prepend('<div>' + streams.users[$thisuser][key]["message"] + ' ' + streams.users[$thisuser][key]["created_at"] + '</div>');
+	        $('.all-tweets').prepend('<div>' + streams.users[$thisuser][key]["message"] + 
+		' ' + streams.users[$thisuser][key]["created_at"] + '</div>');
 	     }
-	     $alltweets.prepend("<div>" + $thisuser + "'s messages:<div>");	    
+	     $('.all-tweets').prepend("<div>" + $thisuser + "'s messages:<div>");	    
       	  });
 
 
@@ -127,9 +108,9 @@
 
 	<h2>TWITTLER!</h2>
 	<div id='fetching'>
-		<button>Get New Tweets</button>
+	  <button>Get New Tweets</button>
 	</div>
 	<p></p>
-
+	
   </body>
 </html>
