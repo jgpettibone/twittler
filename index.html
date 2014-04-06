@@ -5,51 +5,17 @@
     <script src="data_generator.js"></script>
   </head>
   <body>
-    <script>
+  <script>
 
-    	/*
-    	**************************************
-    	TO DO
-    	**************************************
-	- Show the user new tweets somehow
-	  - Automatically as created?
-  	  - Click on a button?
-	- Display the timestamps of when the tweets were created
-	- Design interface 
-	- Allow users to click a username to see that user's timeline
-
-	
-	users = [username1, username2, ..., usernamen]
-	streams = {users: {username1: username1's tweets,
-			   username2: username2's tweets,
-			   ...				
-			   usernamen: usernamen's tweets},
-		   home:  [tweet1, tweet2, tweet3]}	
-    	*/
-
-
-    	/*
-    	**************************************
-    	QUESTIONS
-    	**************************************
-	
-	- How much interface design is necessary? 
-	- Why with the username click?
-
-    	*/
-
-
-    	/*
-    	**************************************
-    	FUNCTION DECLARATIONS
-    	**************************************
-    	*/
+	/*
+	**************************************
+	FUNCTION DECLARATIONS
+	**************************************
+	*/
 
 	var fetchTweets = function() {
 	  var index = streams.home.length - 1;
 	  $currInd = $('.all-tweets').data('index');
-	  //alert("old ind in = " + $currInd);
-	  //while(index > currentIndex) {
 	  while(index > $currInd) {
 	    var tweet = streams.home[index];
 	    var $tweet = $("<div class='tweet'></div>");
@@ -62,27 +28,17 @@
             index -= 1;
 	  }
 	  $('.all-tweets').data('index', streams.home.length - 1);
-
-	      //this needs to come right after the fetchTweets or it doesn't work with new tweets
-	      //I don't know why this is ...
-	      //but then it multiplies so that each time fetch is called the first gives one
-	      //then second group gives one and first gives two, etc
-	      //so I tried turning it off and on again - which works
-	      //I don't know why this is ...
-   	      $('.tweet').off('click');
-	      $('.tweet').on('click', 'button', function() {
-	        debugger;
-	        $thisuser = $(this).text();
-	        $('.all-tweets').prepend("<p class='separator'>-----</p>");
-	        for (var key in streams.users[$thisuser]) {
-	          $('.all-tweets').prepend("<div class='timeline'>" + streams.users[$thisuser][key]["message"] + 
-		' ' + streams.users[$thisuser][key]["created_at"] + '</div>');
-	        }
-	        $('.all-tweets').prepend("<div class='timeline'>" + $thisuser + "'s messages:<div>");	    
-      	      });
-
-        }
-
+    $('.tweet').off('click');
+    $('.tweet').on('click', 'button', function() {
+      $thisuser = $(this).text();
+      $('.all-tweets').prepend("<p class='separator'>-----</p>");
+      for (var key in streams.users[$thisuser]) {
+        $('.all-tweets').prepend("<div class='timeline'>" + streams.users[$thisuser][key]["message"] + 
+  		  ' ' + streams.users[$thisuser][key]["created_at"] + '</div>');
+      }
+      $('.all-tweets').prepend("<div class='timeline'>" + $thisuser + "'s messages:<div>");	    
+    });
+  }
 
 	var confirmation = {
 	  init: function() {
@@ -91,7 +47,6 @@
 	      fetchTweets();
 	    });	
 	    $('#clearing').on('click', function() {
-	      //$('.all-tweets').data('index', 0);
 	      $('.tweet').remove();
 	      $('.separator').remove();
 	      $('.timeline').remove();
@@ -99,31 +54,24 @@
 	  }
 	};
 	
-
 	var testFun = function() {
 	  alert("Hello");
 	}
 
-
-
-    	/*
-    	**************************************
-    	BODY OF SCRIPT
-    	**************************************
-    	*/
+	/*
+	**************************************
+	BODY OF SCRIPT
+	**************************************
+	*/
     
-
-    	$('document').ready(function(){
-
+	$('document').ready(function(){
 	  //creates the event handler
 	  confirmation.init();
-
 	  //initial tweet grab
 	  fetchTweets();
-
-    	});
+	});
     
-    </script>
+  </script>
 
 	<h2>TWITTLER!</h2>
 	<div id='fetching'>
